@@ -12,7 +12,7 @@ export default (state = _nullSession, action) => {
   Object.freeze(state);
   switch (action.type) {
     case RECEIVE_CURRENT_USER:
-    localStorage.setItem("_sms_app_session", "_sms_app_session=" + action.user.data.session_token);
+    localStorage.setItem("_sms_app_session", action.user.data.session_token);
       return Object.assign({}, {
         currentUser: action.user.data
       });

@@ -13,7 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let store;
-  axios.get("http://localhost:3000/api/register_token")
+  axios.get("http://localhost:3000/api/register_token", {
+    'headers': {
+      "Authorization": localStorage.getItem("_sms_app_session")
+    }
+  })
     .then(resp => {
       const currentUser = resp.data;
       if (currentUser.id) {

@@ -31999,7 +31999,12 @@ module.exports = function(module) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var BASE_URL = exports.BASE_URL = "http://localhost:3000";
+var BASE_URL = exports.BASE_URL = "http://39d0984f.ngrok.io";
+var AUTH_HEADER = exports.AUTH_HEADER = {
+  'headers': {
+    "Authorization": localStorage.getItem("_sms_app_session")
+  }
+};
 
 /***/ }),
 
@@ -32088,17 +32093,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var postUser = exports.postUser = function postUser(user) {
   return _axios2.default.post(_proxy.BASE_URL + '/api/users', {
     user: user
-  });
+  }, _proxy.AUTH_HEADER);
 };
 
 var postSession = exports.postSession = function postSession(user) {
   return _axios2.default.post(_proxy.BASE_URL + '/api/session', {
     user: user
-  });
+  }, _proxy.AUTH_HEADER);
 };
 
 var deleteSession = exports.deleteSession = function deleteSession() {
-  return _axios2.default.delete(_proxy.BASE_URL + '/api/session');
+  return _axios2.default.delete(_proxy.BASE_URL + '/api/session', _proxy.AUTH_HEADER);
 };
 
 /***/ }),
@@ -32181,15 +32186,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var postTask = exports.postTask = function postTask(task) {
   return _axios2.default.post(_proxy.BASE_URL + "/api/tasks", {
     task: task
-  });
+  }, _proxy.AUTH_HEADER);
 };
 
 var getTasks = exports.getTasks = function getTasks(tasks) {
   return _axios2.default.get(_proxy.BASE_URL + "/api/tasks", {
     'headers': {
-      "COOKIE": localStorage.getItem("_sms_app_session")
+      "Authorization": localStorage.getItem("_sms_app_session")
     }
-  });
+  }, _proxy.AUTH_HEADER);
 };
 
 /***/ }),
@@ -32993,7 +32998,11 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   var store = void 0;
-  _axios2.default.get("http://localhost:3000/api/register_token").then(function (resp) {
+  _axios2.default.get("http://localhost:3000/api/register_token", {
+    'headers': {
+      "Authorization": localStorage.getItem("_sms_app_session")
+    }
+  }).then(function (resp) {
     var currentUser = resp.data;
     if (currentUser.id) {
       renderDOM((0, _store2.default)({
@@ -33102,7 +33111,7 @@ exports.default = function () {
   Object.freeze(state);
   switch (action.type) {
     case _session.RECEIVE_CURRENT_USER:
-      localStorage.setItem("_sms_app_session", "_sms_app_session=" + action.user.data.session_token);
+      localStorage.setItem("_sms_app_session", action.user.data.session_token);
       return Object.assign({}, {
         currentUser: action.user.data
       });
