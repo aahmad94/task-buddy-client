@@ -7,5 +7,9 @@ export const postTask = (task) => (
 );
 
 export const getTasks = (tasks) => (
-  axios.get(BASE_URL + "/api/tasks")
+  axios.get(BASE_URL + "/api/tasks", {
+    'headers': {
+      "COOKIE": localStorage.getItem("_sms_app_session")
+    }
+  })
 );

@@ -32185,7 +32185,11 @@ var postTask = exports.postTask = function postTask(task) {
 };
 
 var getTasks = exports.getTasks = function getTasks(tasks) {
-  return _axios2.default.get(_proxy.BASE_URL + "/api/tasks");
+  return _axios2.default.get(_proxy.BASE_URL + "/api/tasks", {
+    'headers': {
+      "COOKIE": localStorage.getItem("_sms_app_session")
+    }
+  });
 };
 
 /***/ }),
@@ -32966,6 +32970,10 @@ var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/i
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+var _axios2 = _interopRequireDefault(_axios);
+
 var _store = __webpack_require__(/*! ./store/store */ "./src/store/store.js");
 
 var _store2 = _interopRequireDefault(_store);
@@ -32979,22 +32987,28 @@ var _task = __webpack_require__(/*! ./actions/task */ "./src/actions/task.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
-  var preloadedState = {};
-  // if (window.currentUser) {
-  //   preloadedState = {
-  //     session: {
-  //       currentUser: window.currentUser
-  //     }
-  //   };
-  // }
+  var renderDOM = function renderDOM(store) {
+    var root = document.getElementById('root');
+    _reactDom2.default.render(_react2.default.createElement(_root2.default, { store: store }), root);
+  };
 
-  var store = (0, _store2.default)(preloadedState);
-  var root = document.getElementById('root');
-
-  window.store = store;
-  window.createTask = _task.createTask;
-  window.fetchTasks = _task.fetchTasks;
-  _reactDom2.default.render(_react2.default.createElement(_root2.default, { store: store }), root);
+  var store = void 0;
+  _axios2.default.get("http://localhost:3000/api/register_token").then(function (resp) {
+    var currentUser = resp.data;
+    if (currentUser.id) {
+      renderDOM((0, _store2.default)({
+        session: {
+          currentUser: currentUser
+        }
+      }));
+    } else {
+      // if no current user
+      renderDOM((0, _store2.default)({}));
+    }
+  }, function () {
+    // if api req fails
+    renderDOM((0, _store2.default)({}));
+  });
 });
 
 /***/ }),
@@ -33088,6 +33102,7 @@ exports.default = function () {
   Object.freeze(state);
   switch (action.type) {
     case _session.RECEIVE_CURRENT_USER:
+      localStorage.setItem("_sms_app_session", "_sms_app_session=" + action.user.data.session_token);
       return Object.assign({}, {
         currentUser: action.user.data
       });
